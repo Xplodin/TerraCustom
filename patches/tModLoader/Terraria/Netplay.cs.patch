@@ -1,20 +1,173 @@
---- src/tModLoader/Terraria/Netplay.cs
-+++ src/64bit/Terraria/Netplay.cs
-@@ -214,11 +_,12 @@
- 					flag = false;
- 				}
- 				catch {
--#if MAC
--					Thread.Sleep(200);
--					Netplay.Connection.Socket.Close();
--					Netplay.Connection.Socket = new TcpSocket();
--#endif
-+					if (PlatformUtilities.IsOSX) {
-+						Thread.Sleep(200);
-+						Netplay.Connection.Socket.Close();
-+						Netplay.Connection.Socket = new TcpSocket();
-+					}
+--- src/Terraria/Terraria/Netplay.cs
++++ src/tModLoader/Terraria/Netplay.cs
+@@ -1,24 +_,29 @@
+ using System;
++using System.Collections.Concurrent;
+ using System.IO;
++using System.Linq;
+ using System.Net;
+ using System.Net.Sockets;
 +
- 					if (!disconnect && Main.gameMenu)
- 						flag = true;
+ #if !WINDOWS
+ using System.Runtime.CompilerServices;
+ #endif
+ using System.Threading;
++using System.Threading.Tasks;
+ using Terraria.IO;
+ using Terraria.Localization;
++using Terraria.ModLoader;
+ using Terraria.Net;
+ using Terraria.Net.Sockets;
+ using Terraria.Social;
+ using Terraria.Utilities;
++
+ #if !WINDOWS
+ using Terraria.Social.Base;
+ #endif
+-#if SERVER
++#if SERVER && WINDOWS
+ using NATUPNPLib;
+ #endif
+-
+ namespace Terraria
+ {
+ 	public class Netplay
+@@ -40,7 +_,7 @@
+ 		public static bool spamCheck = false;
+ 		public static bool anyClients = false;
+ 		private static Thread ServerThread;
+-#if SERVER
++#if SERVER && WINDOWS
+ 		public static UPnPNAT upnpnat;
+ 		public static IStaticPortMappingCollection mappings;
+ #endif
+@@ -50,10 +_,24 @@
+ 
+ 		public static event Action OnDisconnect;
+ 
++		private static readonly ConcurrentQueue<Task> mainThreadTasks = new ConcurrentQueue<Task>();
++
++		internal static void OnUpdate() {
++			Task t;
++			while (mainThreadTasks.TryDequeue(out t))
++				t.RunSynchronously();
++		}
++
++		private static void InvokeOnMainThread(Action action) {
++			var t = new Task(action);
++			mainThreadTasks.Enqueue(t);
++			t.Wait();
++		}
++
+ 		private static void OpenPort() {
+ 			portForwardIP = GetLocalIPAddress();
+ 			portForwardPort = ListenPort;
+-#if SERVER
++#if SERVER && WINDOWS
+ 			if (Netplay.upnpnat == null)
+ 			{
+ 				Netplay.upnpnat = (UPnPNAT)Activator.CreateInstance(Type.GetTypeFromCLSID(new Guid("AE1E00AA-3FD5-403C-8A27-2BBDC30CD0E1")));
+@@ -78,7 +_,7 @@
+ 		}
+ 
+ 		public static void closePort() {
+-#if SERVER
++#if SERVER && WINDOWS
+ 			if (Netplay.portForwardOpen)
+ 			{
+ 				Netplay.mappings.Remove(Netplay.portForwardPort, "TCP");
+@@ -110,6 +_,8 @@
+ 				Main.txMsgType[i] = 0;
+ 				Main.txDataType[i] = 0;
+ 			}
++
++			ModNet.ResetNetDiag();
+ 		}
+ 
+ 		public static void ResetSections() {
+@@ -207,6 +_,7 @@
+ 		}
+ 
+ 		private static void ClientLoopSetup(RemoteAddress address) {
++			Logging.Terraria.InfoFormat("Connecting to {0}", address.GetFriendlyName());
+ 			ResetNetDiag();
+ 			Main.ServerSideCharacter = false;
+ 			if (Main.rand == null)
+@@ -226,9 +_,11 @@
+ 
+ 			disconnect = false;
+ 			Connection = new RemoteServer();
+-			Connection.ReadBuffer = new byte[1024];
++			Connection.ReadBuffer = new byte[ushort.MaxValue];
+ 		}
+ 
++
++		internal static bool syncingWorld = false;
+ 		private static void InnerClientLoop() {
+ 			try {
+ 				NetMessage.buffer[256].Reset();
+@@ -236,7 +_,7 @@
+ 				while (!disconnect) {
+ 					if (Connection.Socket.IsConnected()) {
+ 						if (NetMessage.buffer[256].checkBytes)
+-							NetMessage.CheckBytes();
++							InvokeOnMainThread(() => NetMessage.CheckBytes());
+ 
+ 						Connection.IsActive = true;
+ 						if (Connection.State == 0) {
+@@ -274,6 +_,7 @@
+ 						else if (Connection.State == 5 && WorldGen.worldCleared) {
+ 							Connection.State = 6;
+ 							Main.player[Main.myPlayer].FindSpawn();
++							syncingWorld = true;
+ 							NetMessage.SendData(8, -1, -1, null, Main.player[Main.myPlayer].SpawnX, Main.player[Main.myPlayer].SpawnY);
+ 						}
+ 
+@@ -307,6 +_,7 @@
+ 					num = Connection.State;
  				}
+ 
++				syncingWorld = false;
+ 				try {
+ 					Connection.Socket.Close();
+ 				}
+@@ -366,7 +_,7 @@
+ 			if (num != -1) {
+ 				Clients[num].Reset();
+ 				Clients[num].Socket = client;
+-				Console.WriteLine(Language.GetTextValue("Net.ClientConnecting", client.GetRemoteAddress()));
++				//Console.WriteLine(Language.GetTextValue("Net.ClientConnecting", client.GetRemoteAddress()));
+ 			}
+ 
+ 			if (FindNextOpenClientSlot() == -1)
+@@ -456,16 +_,21 @@
+ 				}
+ 
+ 				int num3 = 0;
++				if (NetMessage.buffer.Any(b => b.checkBytes) || Clients.Any(c => c.PendingTermination)) {
++					InvokeOnMainThread(() => {
++						for (int k = 0; k < 256; k++) {
++							if (NetMessage.buffer[k].checkBytes)
++								NetMessage.CheckBytes(k);
++
++							if (Clients[k].PendingTermination) {
++								Clients[k].Reset();
++								NetMessage.SyncDisconnectedPlayer(k);
++							}
++						}
++					});
++				}
++
+ 				for (int k = 0; k < 256; k++) {
+-					if (NetMessage.buffer[k].checkBytes)
+-						NetMessage.CheckBytes(k);
+-
+-					if (Clients[k].PendingTermination) {
+-						Clients[k].Reset();
+-						NetMessage.SyncDisconnectedPlayer(k);
+-						continue;
+-					}
+-
+ 					if (Clients[k].IsConnected()) {
+ 						if (!Clients[k].IsActive)
+ 							Clients[k].State = 0;

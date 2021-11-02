@@ -1,16 +1,17 @@
-Steam installation:
-Look for tModLoader in the Steam Store and install.
+Install Instructions: Make a 'TerraCustom' folder next to the Terraria install folder and place the .zip contents in it.
 
-Manual installation:
-Make a 'tModLoader' folder next to the Terraria install folder and place the .zip contents in it. Launch the provided .exe instead of the regular one.
+To Run: Run TerraCustom.exe
 
-Run tModLoader:
-Just launch the provided .exe of tModLoader or launch through Steam. If you see Mods or Mod Browser on the main menu in Terraria, you have successfully installed tModLoader.
+How to find your Install Location:
 
-Uninstall/Switch back to un-modded Terraria:
-In Steam, right click tModLoader in your library -> manage -> uninstall
-If you installed manually, simply remove the tModLoader folder.
-Note: If you want to play un-modded Terraria or join an un-modded Terraria server, you can't use tModLoader.
+  Default Steam: "C:\Program Files (x86)\Steam\SteamApps\common\Terraria"
 
-Dedicated tModLoader server:
-If you are installing tModLoader onto a machine that will be running a dedicated server, you'll need to install the un-modded Terraria server first: http://terraria.org/server/terraria-server-1353.zip  After installing, you can follow the manual install instructions to copy the tModLoader files into the folder you installed the server into. More info on running a dedicated server can be found at https://github.com/tModLoader/tModLoader/wiki/Command-Line#dedicated-host .
+  Non-Default Steam: Use the browse local files option within steam to locate your install folder. If you can't find it, view this video: https://gfycat.com/SelfreliantAssuredIsabellineshrike
+
+  GOG: Wherever you put it, likely "C:\GOG Games\Terraria​"
+
+Note: "C:\Documents\My Games\Terraria\" is NOT your install folder, it is your SAVE folder. Terra Custom NEEDS to be placed next to the install folder to work.
+
+Report bugs and feature requests to https://github.com/JavidPack/TerraCustom/issues or https://forums.terraria.org/index.php?threads/terracustom-for-1-3.35346/ . We can also chat in my Discord server: https://discord.gg/w8Hcwby
+
+Additional install instructions can be found at https://github.com/JavidPack/TerraCustom/wiki/Install-Instructions

@@ -12,7 +12,7 @@ namespace Terraria.ModLoader.Properties {
     
     
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.4.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("Microsoft.VisualStudio.Editors.SettingsDesigner.SettingsSingleFileGenerator", "16.6.0.0")]
     internal sealed partial class Settings : global::System.Configuration.ApplicationSettingsBase {
         
         private static Settings defaultInstance = ((Settings)(global::System.Configuration.ApplicationSettingsBase.Synchronized(new Settings())));
@@ -116,6 +116,18 @@ namespace Terraria.ModLoader.Properties {
         public string GoGClientWinMD5 {
             get {
                 return ((string)(this["GoGClientWinMD5"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2015-01-01")]
+        public global::System.DateTime TerraCustomDiffCutoff {
+            get {
+                return ((global::System.DateTime)(this["TerraCustomDiffCutoff"]));
+            }
+            set {
+                this["TerraCustomDiffCutoff"] = value;
             }
         }
     }

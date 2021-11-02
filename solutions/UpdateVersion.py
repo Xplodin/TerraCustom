@@ -11,22 +11,7 @@ versionInput = input("Enter new version number separated by periods ('0.1.2.3'):
 versionList = versionInput.split('.')
 #versionNums = [int(x) for x in versionList]
 
-betaInput = input("Beta number (leave blank for no beta):  ").strip()
-beta = 0
-if betaInput:
-    beta = int(betaInput)
-    
-versionWithBeta = versionInput
-if beta > 0:
-    versionWithBeta = versionInput + " Beta " + str(beta)
-
-TypicalReplace("CompleteRelease.bat", "set tModLoaderVersion=v", versionWithBeta)
-TypicalReplace("../ExampleMod/build.txt", "version = ", versionInput)
-TypicalReplace("documentation/Doxyfile", "PROJECT_NUMBER         = ", versionInput)
-TypicalReplace("../patches/tModLoader/Terraria.ModLoader/ModLoader.cs", "\t\tpublic static readonly Version version = new Version(", ', '.join(versionList) + ');')
-TypicalReplace("../patches/tModLoader/Terraria.ModLoader/ModLoader.cs", "\t\tpublic static readonly int beta = ", str(beta) + ';')
-
-with open('ReleaseExtras/version', 'w') as verisonFile:
-    verisonFile.write('v' + versionInput)
+TypicalReplace("CompleteRelease.bat", "set TerraCustomVersion=v", versionInput)
+TypicalReplace("../patches/TerraCustom/Terraria/Main.cs.patch", "+\t\t\t\tstring drawVersion = Main.versionNumber + Environment.NewLine + ModLoader.ModLoader.versionedName + Environment.NewLine + \"jopojelly's TerraCustom v", versionInput + '" + (showPatreon ? Environment.NewLine + supportMessage : "");')
 
 input("Press Enter to continue...")
