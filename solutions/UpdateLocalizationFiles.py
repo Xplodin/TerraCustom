@@ -1,10 +1,8 @@
-import os.path
-from os import path
 
 # Run this script after updating en-US.tModLoader.json with new keys. python 3.
 # Also make sure the file encodings are UTF-8 not UTF-8-BOM.
 
-filename = '../src/TerraCustom/Terraria.Localization.Content/{0}.TerraCustom.json'
+filename = '../src/tModLoader/Terraria.Localization.Content/{0}.tModLoader.json'
 
 languages = ['zh-Hans', 'ru-RU', 'pt-BR', 'pl-PL', 'it-IT', 'fr-FR', 'es-ES', 'de-DE']
 missings = []
@@ -12,10 +10,6 @@ for language in languages:
     #language = 'zh-Hans'
     otherLanguage = ''
     missing = 0
-    if not path.exists(filename.format(language)):
-        print("Not Found, Skipping:",language)
-        missings.append( (language, "All") )
-        continue
     print("Updating:",language)
     with open(filename.format('en-US'), 'r', encoding='utf-8') as english, open(filename.format(language), 'r', encoding='utf-8') as other:
         enLines = english.readlines()

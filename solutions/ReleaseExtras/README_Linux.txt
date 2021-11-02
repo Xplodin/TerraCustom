@@ -1,23 +1,22 @@
-Install Instructions: Make a 'TerraCustom' folder next to the Terraria install folder and place the .zip contents in it.
+Steam installation:
+Look for tModLoader in the Steam Store and install.
 
-To Run: Run the TerraCustom file (not TerraCustom.exe)
-
-If it doesn't run, you might need to give execute permissions to the TerraCustom file. To do this, open a terminal in the install directory and run this command:
-    chmod +x TerraCustom
+Manual installation:
+Make a 'tModLoader' folder next to the Terraria install folder and place the .zip contents in it. Launch the provided 'tModLoader' file instead of the regular one.
+Run Terraria through the provided files. If it doesn't run, you might need to give execute permissions to 2 files. If so, open a terminal in the install directory and run the following 2 commands:
+    chmod +x tModLoaderServer
+    chmod +x tModLoader
 
 Why are there EXE files?:
 Don't worry about it, you didn't download the wrong thing.
 
-How to find your Install Location:
+Run tModLoader:
+Just launch the provided tModLoader file (tModLoader) or launch through Steam. If you see Mods or Mod Browser on the main menu in Terraria, you have successfully installed tModLoader.
 
-  Default Steam: ".local/share/Steam/steamapps/common/Terraria"
+Uninstall/Switch back to un-modded Terraria:
+In Steam, right click tModLoader in your library -> manage -> uninstall
+If you installed manually, simply remove the tModLoader folder.
+Note: If you want to play un-modded Terraria or join an un-modded Terraria server, you can't use tModLoader.
 
-  Non-Default Steam: Use the browse local files option within steam to locate your install folder. If you can't find it, view this video: https://gfycat.com/SelfreliantAssuredIsabellineshrike
-
-  GOG: Wherever you put it
-
-Note: "~/.local/share/Terraria" or "$XDG_DATA_HOME/Terraria" are NOT your install folder, they are your SAVE folder. Terra Custom NEEDS to be placed next to the install folder to work.
-
-Report bugs and feature requests to https://github.com/JavidPack/TerraCustom/issues or https://forums.terraria.org/index.php?threads/terracustom-for-1-3.35346/ . We can also chat in my Discord server: https://discord.gg/w8Hcwby
-
-Additional install instructions can be found at https://github.com/JavidPack/TerraCustom/wiki/Install-Instructions
+Dedicated tModLoader server:
+If you are installing tModLoader onto a machine that will be running a dedicated server, you'll need to install the un-modded Terraria server first: http://terraria.org/server/terraria-server-1353.zip  After installing, you can follow the manual install instructions to copy the tModLoader files into the folder you installed the server into. More info on running a dedicated server can be found at https://github.com/tModLoader/tModLoader/wiki/Command-Line#dedicated-host .
